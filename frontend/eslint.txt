@@ -1,0 +1,86 @@
+﻿
+C:\Users\Abhishek\.gemini\antigravity\scratch\real-estate-predictor\frontend\src\app\about\page.tsx
+  78:60  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Users\Abhishek\.gemini\antigravity\scratch\real-estate-predictor\frontend\src\app\auth\page.tsx
+    7:52  warning  'CardDescription' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+   22:5   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Abhishek\.gemini\antigravity\scratch\real-estate-predictor\frontend\src\app\auth\page.tsx:22:5
+  20 |
+  21 |   useEffect(() => {
+> 22 |     setActiveTab(searchParams.get("tab") === "signup" ? "signup" : "login");
+     |     ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  23 |   }, [searchParams]);
+  24 |
+  25 |   const handleSubmit = async (e: React.FormEvent) => {  react-hooks/set-state-in-effect
+  171:9   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        @next/next/no-img-element
+
+C:\Users\Abhishek\.gemini\antigravity\scratch\real-estate-predictor\frontend\src\app\dashboard\page.tsx
+  17:64  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       @typescript-eslint/no-explicit-any
+  23:58  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       @typescript-eslint/no-explicit-any
+  38:7   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Abhishek\.gemini\antigravity\scratch\real-estate-predictor\frontend\src\app\dashboard\page.tsx:38:7
+  36 |     const savedUser = localStorage.getItem('urbanUser');
+  37 |     if (savedUser) {
+> 38 |       setMockUser(JSON.parse(savedUser));
+     |       ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  39 |     }
+  40 |   }, []);
+  41 |  react-hooks/set-state-in-effect
+
+C:\Users\Abhishek\.gemini\antigravity\scratch\real-estate-predictor\frontend\src\app\page.tsx
+  53:14  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\Abhishek\.gemini\antigravity\scratch\real-estate-predictor\frontend\src\components\dashboard\ComparisonEngine.tsx
+  9:50  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Abhishek\.gemini\antigravity\scratch\real-estate-predictor\frontend\src\components\dashboard\ComparisonTabView.tsx
+  27:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  43:43  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Abhishek\.gemini\antigravity\scratch\real-estate-predictor\frontend\src\components\dashboard\InteractiveMap.tsx
+  15:5   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Abhishek\.gemini\antigravity\scratch\real-estate-predictor\frontend\src\components\dashboard\InteractiveMap.tsx:15:5
+  13 |
+  14 |   useEffect(() => {
+> 15 |     setIsMounted(true);
+     |     ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  16 |     fetch("http://localhost:8000/locations")
+  17 |       .then(res => res.json())
+  18 |       .then(data => setLocations(data.heatmap))  react-hooks/set-state-in-effect
+  50:34  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       @typescript-eslint/no-explicit-any
+
+C:\Users\Abhishek\.gemini\antigravity\scratch\real-estate-predictor\frontend\src\components\dashboard\InvestmentScoreCard.tsx
+  42:13  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  42:43  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+C:\Users\Abhishek\.gemini\antigravity\scratch\real-estate-predictor\frontend\src\components\dashboard\PredictorCard.tsx
+   16:26  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+   28:60  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+   36:6   warning  React Hook useEffect has a missing dependency: 'location'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  288:47  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  290:77  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+
+Γ£û 20 problems (16 errors, 4 warnings)
+
