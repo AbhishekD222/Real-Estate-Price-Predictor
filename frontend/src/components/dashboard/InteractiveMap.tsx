@@ -149,9 +149,15 @@ export default function InteractiveMap({ location }: InteractiveMapProps) {
   const [locations, setLocations] = useState<HeatmapLocation[]>(fallbackData);
 
   useEffect(() => {
-    const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-    fetch(`${apiBase}/locations`)
-      .then(res => res.json())
+    const apiBase = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/$/, "");
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 6000);
+
+    fetch(`${apiBase}/locations`, { signal: controller.signal })
+      .then(res => {
+        if (!res.ok) throw new Error("API Error");
+        return res.json();
+      })
       .then(data => {
         // If backend provides specific pricing heatmap data, use it, otherwise keep fallback
         if (data.heatmap && data.heatmap.length > 0) {
@@ -160,6 +166,9 @@ export default function InteractiveMap({ location }: InteractiveMapProps) {
       })
       .catch(e => {
         console.error("Could not load heatmap", e);
+      })
+      .finally(() => {
+        clearTimeout(timeoutId);
       });
   }, []);
 

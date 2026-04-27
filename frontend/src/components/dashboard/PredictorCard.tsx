@@ -64,15 +64,33 @@ export default function PredictorCard({ defaultLocation = "", onCalculate, onLoc
     await new Promise(resolve => setTimeout(resolve, 1500));
     
     try {
-      const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      const apiBase = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/$/, "");
+      
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 6000);
+
       const res = await fetch(`${apiBase}/predict`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ location: location || "Mumbai", bhk, sqft: sqft[0] })
+        body: JSON.stringify({ location: location || "Mumbai", bhk, sqft: sqft[0] }),
+        signal: controller.signal
       });
+      
+      if (!res.ok) {
+        clearTimeout(timeoutId);
+        throw new Error("Predict API Failed");
+      }
+      
       const data = await res.json();
       
-      const trendRes = await fetch(`${apiBase}/trends?region=${encodeURIComponent(location || "Mumbai")}`);
+      const trendRes = await fetch(`${apiBase}/trends?region=${encodeURIComponent(location || "Mumbai")}`, {
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
+      
+      if (!trendRes.ok) throw new Error("Trend API Failed");
+      
       const trendData = await trendRes.json();
       
       setPrice(data.predicted_price);

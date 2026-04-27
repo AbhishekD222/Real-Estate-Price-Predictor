@@ -47,13 +47,19 @@ export default function TrendHistoryChart({ location }: TrendHistoryChartProps) 
       return trends;
     };
 
-    const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+    const apiBase = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/$/, "");
     const url = location 
         ? `${apiBase}/trends?region=${encodeURIComponent(location)}` 
         : `${apiBase}/trends`;
         
-    fetch(url)
-      .then(res => res.json())
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 6000);
+
+    fetch(url, { signal: controller.signal })
+      .then(res => {
+        if (!res.ok) throw new Error("API Error");
+        return res.json();
+      })
       .then(d => {
         if (d.trends && d.trends.length > 0) setData(d.trends);
         else setData(generateFallbackTrends(location));
@@ -61,6 +67,9 @@ export default function TrendHistoryChart({ location }: TrendHistoryChartProps) 
       .catch(e => {
         console.error("Failed to fetch trends", e);
         setData(generateFallbackTrends(location));
+      })
+      .finally(() => {
+        clearTimeout(timeoutId);
       });
   }, [location]);
 

@@ -15,12 +15,21 @@ export default function ComparisonEngine() {
       { region: "Andheri East", type: "Emerging Hub", price_per_sqft: 18500, is_positive: true, trend: "+8.1%" },
     ];
 
-    const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-    fetch(`${apiBase}/compare/top`)
-      .then(res => res.json())
+    const apiBase = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/$/, "");
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 6000);
+
+    fetch(`${apiBase}/compare/top`, { signal: controller.signal })
+      .then(res => {
+        if (!res.ok) throw new Error("API Error");
+        return res.json();
+      })
       .then(data => setComparisons(data.comparisons?.length ? data.comparisons : FALLBACK_COMPARISONS))
       .catch(() => setComparisons(FALLBACK_COMPARISONS))
-      .finally(() => setLoading(false));
+      .finally(() => {
+        clearTimeout(timeoutId);
+        setLoading(false);
+      });
   }, []);
 
   return (

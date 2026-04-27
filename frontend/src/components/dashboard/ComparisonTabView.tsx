@@ -51,11 +51,20 @@ export default function ComparisonTabView({ topRegions }: ComparisonTabViewProps
     setActiveA(a);
     setActiveB(b);
     try {
-      const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      const apiBase = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/$/, "");
+      
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 6000);
+
       const [resA, resB] = await Promise.all([
-        fetch(`${apiBase}/trends?region=${encodeURIComponent(a)}`),
-        fetch(`${apiBase}/trends?region=${encodeURIComponent(b)}`)
+        fetch(`${apiBase}/trends?region=${encodeURIComponent(a)}`, { signal: controller.signal }),
+        fetch(`${apiBase}/trends?region=${encodeURIComponent(b)}`, { signal: controller.signal })
       ]);
+      
+      clearTimeout(timeoutId);
+      
+      if (!resA.ok || !resB.ok) throw new Error("API Error");
+
       const dataA = await resA.json();
       const dataB = await resB.json();
 
