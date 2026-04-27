@@ -156,7 +156,16 @@ export default function PredictorCard({ defaultLocation = "", onCalculate, onAdd
                 onFocus={() => setShowLocationSuggs(true)}
                 onBlur={() => setTimeout(() => setShowLocationSuggs(false), 200)}
                 onKeyDown={(e) => {
-                  const suggestions = allRegions.filter(r => r.toLowerCase().includes(location.toLowerCase()));
+                  const suggestions = allRegions
+                    .filter(r => r.toLowerCase().includes(location.toLowerCase()))
+                    .sort((a, b) => {
+                      const aStarts = a.toLowerCase().startsWith(location.toLowerCase());
+                      const bStarts = b.toLowerCase().startsWith(location.toLowerCase());
+                      if (aStarts && !bStarts) return -1;
+                      if (!aStarts && bStarts) return 1;
+                      return a.localeCompare(b);
+                    });
+                    
                   if (!showLocationSuggs || suggestions.length === 0) return;
                   
                   if (e.key === "ArrowDown") {
@@ -178,9 +187,18 @@ export default function PredictorCard({ defaultLocation = "", onCalculate, onAdd
                 autoComplete="off"
               />
               
-              {showLocationSuggs && allRegions.length > 0 && location && (
+              {showLocationSuggs && allRegions.length > 0 && (
                  <div className="absolute top-[65px] left-0 w-full bg-black/95 border border-white/10 rounded-xl backdrop-blur-xl overflow-y-auto max-h-48 text-sm animate-in fade-in shadow-xl z-[100] custom-scrollbar">
-                   {allRegions.filter(r => r.toLowerCase().includes(location.toLowerCase())).map((region, idx) => (
+                   {allRegions
+                     .filter(r => r.toLowerCase().includes(location.toLowerCase()))
+                     .sort((a, b) => {
+                       const aStarts = a.toLowerCase().startsWith(location.toLowerCase());
+                       const bStarts = b.toLowerCase().startsWith(location.toLowerCase());
+                       if (aStarts && !bStarts) return -1;
+                       if (!aStarts && bStarts) return 1;
+                       return a.localeCompare(b);
+                     })
+                     .map((region, idx) => (
                       <div 
                         key={idx} 
                         className={`px-4 py-2 cursor-pointer transition-colors border-b border-white/5 last:border-0 ${idx === focusedIndex ? 'bg-primary/20 text-white' : 'text-white/80 hover:bg-primary/20 hover:text-white'}`}
