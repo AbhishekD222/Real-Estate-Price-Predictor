@@ -316,6 +316,7 @@ export default function Dashboard() {
                   <div className="xl:col-span-2 xl:row-span-2">
                      <PredictorCard 
                        defaultLocation={selectedLocation} 
+                       onLocationChange={(loc) => setSelectedLocation(loc)}
                        onCalculate={(loc) => setSelectedLocation(loc)} 
                        onAddFavourite={(fav) => {
                          setFeaturedProperties(prev => [fav, ...prev]);
@@ -326,7 +327,7 @@ export default function Dashboard() {
                   <div className="xl:col-span-1 xl:row-span-1"><InvestmentScoreCard /></div>
                   <div className="xl:col-span-1 xl:row-span-1"><ComparisonEngine /></div>
                   <div className="xl:col-span-2 xl:row-span-1"><TrendHistoryChart location={selectedLocation} /></div>
-                  <div className="xl:col-span-4 h-[400px]"><InteractiveMapDynamic /></div>
+                  <div className="xl:col-span-4 h-[400px]"><InteractiveMapDynamic location={selectedLocation} /></div>
                 </motion.div>
              ) : activeTab === "favourites" ? (
                 <motion.div 

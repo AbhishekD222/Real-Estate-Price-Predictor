@@ -7,6 +7,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { MapPin, Activity, GitCompare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Magnetic from "@/components/ui/Magnetic";
+import { ALL_LOCATIONS } from "@/lib/locations";
 
 interface ComparisonTabViewProps {
   topRegions: string[];
@@ -25,7 +26,7 @@ export default function ComparisonTabView({ topRegions }: ComparisonTabViewProps
   
   const [activeA, setActiveA] = useState<string>("");
   const [activeB, setActiveB] = useState<string>("");
-  const [allRegions, setAllRegions] = useState<string[]>([]);
+  const [allRegions, setAllRegions] = useState<string[]>(ALL_LOCATIONS);
   
   const [chartData, setChartData] = useState<Record<string, string | number>[]>([]);
   const [loading, setLoading] = useState(false);
@@ -74,20 +75,11 @@ export default function ComparisonTabView({ topRegions }: ComparisonTabViewProps
   };
 
   useEffect(() => {
-    const FALLBACK_ALL = [
-      "Andheri East", "Andheri West", "Bandra East", "Bandra West", "Borivali East",
-      "Borivali West", "Chembur", "Colaba", "Dahisar", "Dadar", "Ghatkopar East",
-      "Ghatkopar West", "Goregaon East", "Goregaon West", "Juhu", "Kandivali East",
-      "Kandivali West", "Kurla", "Lower Parel", "Malad East", "Malad West",
-      "Matunga", "Mulund", "Navi Mumbai", "Parel", "Powai", "Santacruz East",
-      "Santacruz West", "Thane", "Vikhroli", "Vile Parle East", "Vile Parle West",
-      "Wadala", "Worli"
-    ];
     const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
     fetch(`${apiBase}/regions/all`)
       .then(res => res.json())
-      .then(data => setAllRegions(data.regions?.length ? data.regions : FALLBACK_ALL))
-      .catch(() => setAllRegions(FALLBACK_ALL));
+      .then(data => setAllRegions(data.regions?.length ? data.regions : ALL_LOCATIONS))
+      .catch(() => setAllRegions(ALL_LOCATIONS));
   }, []);
 
   useEffect(() => {
@@ -129,7 +121,15 @@ export default function ComparisonTabView({ topRegions }: ComparisonTabViewProps
                onFocus={() => setShowSuggsA(true)}
                onBlur={() => setTimeout(() => setShowSuggsA(false), 200)}
                onKeyDown={(e) => {
-                 const suggestions = allRegions.filter(r => r.toLowerCase().includes(searchA.toLowerCase()));
+                 const suggestions = allRegions
+                   .filter(r => r.toLowerCase().includes(searchA.toLowerCase()))
+                   .sort((a, b) => {
+                     const aStarts = a.toLowerCase().startsWith(searchA.toLowerCase());
+                     const bStarts = b.toLowerCase().startsWith(searchA.toLowerCase());
+                     if (aStarts && !bStarts) return -1;
+                     if (!aStarts && bStarts) return 1;
+                     return a.localeCompare(b);
+                   });
                  if (!showSuggsA || suggestions.length === 0) return;
                  if (e.key === "ArrowDown") {
                    e.preventDefault();
@@ -153,7 +153,16 @@ export default function ComparisonTabView({ topRegions }: ComparisonTabViewProps
              />
              {showSuggsA && allRegions.length > 0 && (
                  <div className="absolute top-[68px] left-6 right-6 bg-black/95 border border-white/10 rounded-xl backdrop-blur-xl overflow-y-auto max-h-48 text-sm animate-in fade-in shadow-xl z-[100] custom-scrollbar">
-                   {allRegions.filter(r => r.toLowerCase().includes(searchA.toLowerCase())).map((region, idx) => (
+                   {allRegions
+                     .filter(r => r.toLowerCase().includes(searchA.toLowerCase()))
+                     .sort((a, b) => {
+                       const aStarts = a.toLowerCase().startsWith(searchA.toLowerCase());
+                       const bStarts = b.toLowerCase().startsWith(searchA.toLowerCase());
+                       if (aStarts && !bStarts) return -1;
+                       if (!aStarts && bStarts) return 1;
+                       return a.localeCompare(b);
+                     })
+                     .map((region, idx) => (
                       <div 
                         key={idx} 
                         className={`px-4 py-3 cursor-pointer transition-colors border-b border-white/5 last:border-0 ${idx === focusedIndexA ? 'bg-primary/20 text-white' : 'text-white/80 hover:bg-primary/20 hover:text-white'}`}
@@ -196,7 +205,15 @@ export default function ComparisonTabView({ topRegions }: ComparisonTabViewProps
                onFocus={() => setShowSuggsB(true)}
                onBlur={() => setTimeout(() => setShowSuggsB(false), 200)}
                onKeyDown={(e) => {
-                 const suggestions = allRegions.filter(r => r.toLowerCase().includes(searchB.toLowerCase()));
+                 const suggestions = allRegions
+                   .filter(r => r.toLowerCase().includes(searchB.toLowerCase()))
+                   .sort((a, b) => {
+                     const aStarts = a.toLowerCase().startsWith(searchB.toLowerCase());
+                     const bStarts = b.toLowerCase().startsWith(searchB.toLowerCase());
+                     if (aStarts && !bStarts) return -1;
+                     if (!aStarts && bStarts) return 1;
+                     return a.localeCompare(b);
+                   });
                  if (!showSuggsB || suggestions.length === 0) return;
                  if (e.key === "ArrowDown") {
                    e.preventDefault();
@@ -220,7 +237,16 @@ export default function ComparisonTabView({ topRegions }: ComparisonTabViewProps
              />
              {showSuggsB && allRegions.length > 0 && (
                  <div className="absolute top-[68px] left-6 right-6 bg-black/95 border border-white/10 rounded-xl backdrop-blur-xl overflow-y-auto max-h-48 text-sm animate-in fade-in shadow-xl z-[100] custom-scrollbar">
-                   {allRegions.filter(r => r.toLowerCase().includes(searchB.toLowerCase())).map((region, idx) => (
+                   {allRegions
+                     .filter(r => r.toLowerCase().includes(searchB.toLowerCase()))
+                     .sort((a, b) => {
+                       const aStarts = a.toLowerCase().startsWith(searchB.toLowerCase());
+                       const bStarts = b.toLowerCase().startsWith(searchB.toLowerCase());
+                       if (aStarts && !bStarts) return -1;
+                       if (!aStarts && bStarts) return 1;
+                       return a.localeCompare(b);
+                     })
+                     .map((region, idx) => (
                       <div 
                         key={idx} 
                         className={`px-4 py-3 cursor-pointer transition-colors border-b border-white/5 last:border-0 ${idx === focusedIndexB ? 'bg-blue-400/20 text-white' : 'text-white/80 hover:bg-blue-400/20 hover:text-white'}`}

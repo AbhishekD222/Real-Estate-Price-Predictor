@@ -9,14 +9,17 @@ import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { Loader2, Home, Heart, AlertTriangle } from "lucide-react";
 import Magnetic from "@/components/ui/Magnetic";
+import { ALL_LOCATIONS, TOP_LOCATIONS } from "@/lib/locations";
+import locationPrices from "@/lib/locationPrices.json";
 
 interface PredictorCardProps {
   defaultLocation?: string;
   onCalculate?: (location: string, price: number) => void;
+  onLocationChange?: (location: string) => void;
   onAddFavourite?: (fav: {location: string, price: string, sqft: number, bhk: number, trend: string}) => void;
 }
 
-export default function PredictorCard({ defaultLocation = "", onCalculate, onAddFavourite }: PredictorCardProps) {
+export default function PredictorCard({ defaultLocation = "", onCalculate, onLocationChange, onAddFavourite }: PredictorCardProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [price, setPrice] = useState<number | null>(null);
   const [location, setLocation] = useState(defaultLocation);
@@ -26,8 +29,8 @@ export default function PredictorCard({ defaultLocation = "", onCalculate, onAdd
   const [bhk, setBhk] = useState(2);
   const [sqft, setSqft] = useState([1000]);
   const [budget, setBudget] = useState<string>("");
-  const [topRegions, setTopRegions] = useState<string[]>([]);
-  const [allRegions, setAllRegions] = useState<string[]>([]);
+  const [topRegions, setTopRegions] = useState<string[]>(TOP_LOCATIONS);
+  const [allRegions, setAllRegions] = useState<string[]>(ALL_LOCATIONS);
   const [historicalTrends, setHistoricalTrends] = useState<{year: number, avg_price_sqft: number}[]>([]);
   const controls = useAnimation();
 
@@ -39,28 +42,17 @@ export default function PredictorCard({ defaultLocation = "", onCalculate, onAdd
   }, [defaultLocation, location]);
 
   useEffect(() => {
-    const FALLBACK_TOP = ["Bandra West", "Andheri East", "Worli", "Juhu", "Powai"];
-    const FALLBACK_ALL = [
-      "Andheri East", "Andheri West", "Bandra East", "Bandra West", "Borivali East",
-      "Borivali West", "Chembur", "Colaba", "Dahisar", "Dadar", "Ghatkopar East",
-      "Ghatkopar West", "Goregaon East", "Goregaon West", "Juhu", "Kandivali East",
-      "Kandivali West", "Kurla", "Lower Parel", "Malad East", "Malad West",
-      "Matunga", "Mulund", "Navi Mumbai", "Parel", "Powai", "Santacruz East",
-      "Santacruz West", "Thane", "Vikhroli", "Vile Parle East", "Vile Parle West",
-      "Wadala", "Worli"
-    ];
-
     const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
     fetch(`${apiBase}/regions/top`)
       .then(res => res.json())
-      .then(data => setTopRegions(data.regions?.length ? data.regions : FALLBACK_TOP))
-      .catch(() => setTopRegions(FALLBACK_TOP));
+      .then(data => setTopRegions(data.regions?.length ? data.regions : TOP_LOCATIONS))
+      .catch(() => setTopRegions(TOP_LOCATIONS));
 
     fetch(`${apiBase}/regions/all`)
       .then(res => res.json())
-      .then(data => setAllRegions(data.regions?.length ? data.regions : FALLBACK_ALL))
-      .catch(() => setAllRegions(FALLBACK_ALL));
+      .then(data => setAllRegions(data.regions?.length ? data.regions : ALL_LOCATIONS))
+      .catch(() => setAllRegions(ALL_LOCATIONS));
   }, []);
 
   const handlePredict = async (e: React.FormEvent) => {
@@ -89,8 +81,15 @@ export default function PredictorCard({ defaultLocation = "", onCalculate, onAdd
       if (onCalculate) onCalculate(location || "Mumbai", data.predicted_price);
     } catch (e) {
       console.error(e);
-      setPrice(7500000); // fallback
-      if (onCalculate) onCalculate(location || "Mumbai", 7500000);
+      
+      // Smart Fallback using real dataset values
+      const pricesDict = locationPrices as Record<string, number>;
+      const basePrice = pricesDict[location] || 7500000;
+      // Dynamically scale based on user input vs averages
+      const adjustedPrice = basePrice * (sqft[0] / 1000) * (bhk / 2);
+      
+      setPrice(adjustedPrice);
+      if (onCalculate) onCalculate(location || "Mumbai", adjustedPrice);
     } finally {
       setIsLoading(false);
     }
@@ -152,7 +151,13 @@ export default function PredictorCard({ defaultLocation = "", onCalculate, onAdd
                 className="bg-black/50 border-white/10 text-white focus:ring-primary placeholder:text-muted-foreground relative z-20" 
                 placeholder="e.g. Bandra West"
                 value={location}
-                onChange={(e) => { setLocation(e.target.value); setShowLocationSuggs(true); setFocusedIndex(-1); }}
+                onChange={(e) => { 
+                  const val = e.target.value;
+                  setLocation(val);
+                  if (onLocationChange) onLocationChange(val);
+                  setShowLocationSuggs(true); 
+                  setFocusedIndex(-1); 
+                }}
                 onFocus={() => setShowLocationSuggs(true)}
                 onBlur={() => setTimeout(() => setShowLocationSuggs(false), 200)}
                 onKeyDown={(e) => {
@@ -176,7 +181,9 @@ export default function PredictorCard({ defaultLocation = "", onCalculate, onAdd
                     setFocusedIndex(prev => prev > 0 ? prev - 1 : prev);
                   } else if (e.key === "Enter" && focusedIndex >= 0) {
                     e.preventDefault();
-                    setLocation(suggestions[focusedIndex]);
+                    const newLoc = suggestions[focusedIndex];
+                    setLocation(newLoc);
+                    if (onLocationChange) onLocationChange(newLoc);
                     setShowLocationSuggs(false);
                     setFocusedIndex(-1);
                   } else if (e.key === "Escape") {
@@ -204,7 +211,9 @@ export default function PredictorCard({ defaultLocation = "", onCalculate, onAdd
                         className={`px-4 py-2 cursor-pointer transition-colors border-b border-white/5 last:border-0 ${idx === focusedIndex ? 'bg-primary/20 text-white' : 'text-white/80 hover:bg-primary/20 hover:text-white'}`}
                         onMouseDown={(e) => { 
                            e.preventDefault(); 
-                           setLocation(region); 
+                           const newLoc = region;
+                           setLocation(newLoc); 
+                           if (onLocationChange) onLocationChange(newLoc);
                            setShowLocationSuggs(false); 
                            setFocusedIndex(-1);
                         }}
@@ -223,7 +232,10 @@ export default function PredictorCard({ defaultLocation = "", onCalculate, onAdd
                   <button
                     key={loc}
                     type="button"
-                    onClick={() => setLocation(loc)}
+                    onClick={() => {
+                      setLocation(loc);
+                      if (onLocationChange) onLocationChange(loc);
+                    }}
                     className="text-[10px] px-2.5 py-1 bg-white/5 hover:bg-primary/20 cursor-pointer rounded-full border border-white/10 transition-colors text-white/60 hover:text-white"
                   >
                     {loc}

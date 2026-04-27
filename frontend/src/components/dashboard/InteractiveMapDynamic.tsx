@@ -7,6 +7,10 @@ const InteractiveMap = dynamic(
   { ssr: false }
 );
 
-export default function InteractiveMapDynamic() {
-  return <InteractiveMap />;
+interface Props {
+  location?: string;
+}
+
+export default function InteractiveMapDynamic({ location }: Props) {
+  return <InteractiveMap location={location} />;
 }
