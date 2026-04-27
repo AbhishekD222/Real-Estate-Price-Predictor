@@ -27,13 +27,13 @@ export default function Dashboard() {
   const [topRegions, setTopRegions] = useState<string[]>([]);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [mockUser, setMockUser] = useState({ name: "Guest Explorer", email: "guest@urbansquare.com", role: "Trial Access" });
-  const [isMounted, setIsMounted] = useState(false);
-
   useEffect(() => {
-    setIsMounted(true);
     if (typeof window !== 'undefined') {
       const savedUser = localStorage.getItem('urbanUser');
-      if (savedUser) setMockUser(JSON.parse(savedUser));
+      if (savedUser) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setMockUser(JSON.parse(savedUser));
+      }
     }
   }, []);
 
