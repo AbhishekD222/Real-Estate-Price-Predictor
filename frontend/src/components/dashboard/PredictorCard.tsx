@@ -326,7 +326,6 @@ export default function PredictorCard({ defaultLocation = "", onCalculate, onLoc
               </div>
             </div>
 
-            <Magnetic>
               <Button 
                 type="submit" 
                 className="w-full bg-primary hover:bg-primary/90 text-black font-semibold py-6 rounded-lg shadow-[0_0_20px_rgba(212,175,55,0.4)] hover:shadow-[0_0_30px_rgba(212,175,55,0.6)] transition-all flex items-center justify-center"
@@ -341,7 +340,6 @@ export default function PredictorCard({ defaultLocation = "", onCalculate, onLoc
                   "Calculate Live Value"
                 )}
               </Button>
-            </Magnetic>
           </form>
 
           {price !== null && !isLoading && (

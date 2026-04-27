@@ -278,7 +278,6 @@ export default function ComparisonTabView({ topRegions }: ComparisonTabViewProps
           </CardContent>
         </Card>
 
-        <Magnetic>
           <Button 
              onClick={() => fetchComparison(locA, locB)}
              disabled={loading}
@@ -286,7 +285,6 @@ export default function ComparisonTabView({ topRegions }: ComparisonTabViewProps
           >
              Compare Market Data
           </Button>
-        </Magnetic>
       </motion.div>
 
       {/* Chart Panel */}
