@@ -26,13 +26,16 @@ export default function Dashboard() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [topRegions, setTopRegions] = useState<string[]>([]);
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [mockUser, setMockUser] = useState(() => {
+  const [mockUser, setMockUser] = useState({ name: "Guest Explorer", email: "guest@urbansquare.com", role: "Trial Access" });
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
     if (typeof window !== 'undefined') {
       const savedUser = localStorage.getItem('urbanUser');
-      if (savedUser) return JSON.parse(savedUser);
+      if (savedUser) setMockUser(JSON.parse(savedUser));
     }
-    return { name: "Guest Explorer", email: "guest@urbansquare.com", role: "Trial Access" };
-  });
+  }, []);
 
   const getInitials = (name: string) => {
     if (!name) return "US";
@@ -40,11 +43,12 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
+    const FALLBACK_TOP = ["Bandra West", "Andheri East", "Worli", "Juhu", "Powai"];
     const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
     fetch(`${apiBase}/regions/top`)
       .then(res => res.json())
-      .then(data => setTopRegions(data.regions || []))
-      .catch(e => console.error("Could not fetch top regions", e));
+      .then(data => setTopRegions(data.regions?.length ? data.regions : FALLBACK_TOP))
+      .catch(() => setTopRegions(FALLBACK_TOP));
   }, []);
 
   useEffect(() => {
@@ -67,10 +71,10 @@ export default function Dashboard() {
           </Link>
 
           {/* Upperbar Tabs */}
-          <div className="flex bg-white/5 p-1 rounded-lg border border-white/10 relative">
+          <div className="flex bg-white/5 p-1 rounded-lg border border-white/10 relative overflow-x-auto hide-scrollbar max-w-[45vw] md:max-w-none">
             <button 
               onClick={() => setActiveTab("overview")}
-              className={`relative px-4 py-1.5 text-sm font-medium rounded-md transition-colors z-10 ${activeTab === "overview" ? "text-white" : "text-white/60 hover:text-white"}`}
+              className={`relative px-3 md:px-4 py-1.5 text-xs md:text-sm font-medium rounded-md transition-colors z-10 whitespace-nowrap ${activeTab === "overview" ? "text-white" : "text-white/60 hover:text-white"}`}
             >
               Overview
               {activeTab === "overview" && (
@@ -79,7 +83,7 @@ export default function Dashboard() {
             </button>
             <button 
               onClick={() => setActiveTab("favourites")}
-              className={`relative px-4 py-1.5 text-sm font-medium rounded-md transition-colors z-10 ${activeTab === "favourites" ? "text-white" : "text-white/60 hover:text-white"}`}
+              className={`relative px-3 md:px-4 py-1.5 text-xs md:text-sm font-medium rounded-md transition-colors z-10 whitespace-nowrap ${activeTab === "favourites" ? "text-white" : "text-white/60 hover:text-white"}`}
             >
               Favourites
               {activeTab === "favourites" && (
@@ -88,7 +92,7 @@ export default function Dashboard() {
             </button>
             <button 
               onClick={() => setActiveTab("compare")}
-              className={`relative px-4 py-1.5 text-sm font-medium rounded-md transition-colors z-10 ${activeTab === "compare" ? "text-white" : "text-white/60 hover:text-white"}`}
+              className={`relative px-3 md:px-4 py-1.5 text-xs md:text-sm font-medium rounded-md transition-colors z-10 whitespace-nowrap ${activeTab === "compare" ? "text-white" : "text-white/60 hover:text-white"}`}
             >
               Compare
               {activeTab === "compare" && (
@@ -256,10 +260,10 @@ export default function Dashboard() {
         <div className="absolute top-[-100px] left-[-100px] w-96 h-96 bg-primary/20 rounded-full blur-[100px] pointer-events-none" />
         <div className="absolute bottom-[-100px] right-[-100px] w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none" />
 
-        <div className="max-w-7xl mx-auto space-y-8 relative z-10 hidden sm:block">
+        <div className="max-w-7xl mx-auto space-y-8 relative z-10">
           
           {/* Header specific to Tab */}
-          <header className="flex flex-col md:flex-row justify-between items-end gap-4 min-h-[60px]">
+          <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 min-h-[60px]">
             {activeTab === "overview" ? (
               <div>
                 <h1 className="text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-white/60">
@@ -396,11 +400,6 @@ export default function Dashboard() {
                 <ComparisonTabView key="compare" topRegions={topRegions} />
              )}
           </AnimatePresence>
-        </div>
-        
-        <div className="sm:hidden flex flex-col items-center justify-center min-h-[60vh] text-center space-y-4">
-           <h1 className="text-3xl font-bold">UrbanSquare</h1>
-           <p className="text-white/60">Please use a desktop/tablet device for the premium bento dashboard experience.</p>
         </div>
 
         {/* Favourites Item Detail Popup Modal */}

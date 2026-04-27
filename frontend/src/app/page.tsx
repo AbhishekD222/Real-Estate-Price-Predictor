@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowRight, Building2, MapPin, TrendingUp, ShieldCheck } from "lucide-react";
 import Magnetic from "@/components/ui/Magnetic";
@@ -50,10 +51,12 @@ export default function DesignerLandingPage() {
             transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
             className="absolute inset-0 origin-bottom"
           >
-             <img 
+           <Image 
                src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=2500&q=80" 
                alt="Modern Futuristic Skyscraper"
-               className="w-full h-full object-cover"
+               fill
+               className="object-cover"
+               priority
              />
           </motion.div>
 
@@ -129,25 +132,41 @@ export default function DesignerLandingPage() {
 
         <div className="relative z-20 bg-[#0A1128] border-y border-white/5 py-12">
           <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div className="text-center">
-               <MapPin className="w-8 h-8 text-white/40 mx-auto mb-4" />
-               <p className="text-white font-semibold flex items-center justify-center gap-2 cursor-pointer hover:text-primary transition-colors">Hyper-Local Intel</p>
+            <div className="text-center group relative">
+               <MapPin className="w-8 h-8 text-white/40 mx-auto mb-4 group-hover:text-primary transition-colors duration-300" />
+               <p className="text-white font-semibold flex items-center justify-center gap-2 cursor-pointer group-hover:text-primary transition-colors">Hyper-Local Intel</p>
                <p className="text-sm text-white/50 mt-1">Granular street-level data</p>
+               <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-56 p-3 bg-[#1A2238] border border-white/10 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.5)] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 pointer-events-none translate-y-2 group-hover:translate-y-0">
+                  <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-[#1A2238] border-b border-r border-white/10 transform rotate-45"></div>
+                  <p className="text-xs text-white/80 relative z-10 leading-relaxed">Access street-by-street metrics, analyzing immediate neighborhood trends and ultra-local market drivers.</p>
+               </div>
             </div>
-            <div className="text-center">
-               <TrendingUp className="w-8 h-8 text-white/40 mx-auto mb-4" />
-               <p className="text-white font-semibold flex items-center justify-center gap-2 cursor-pointer hover:text-primary transition-colors">Live Market Models</p>
+            <div className="text-center group relative">
+               <TrendingUp className="w-8 h-8 text-white/40 mx-auto mb-4 group-hover:text-primary transition-colors duration-300" />
+               <p className="text-white font-semibold flex items-center justify-center gap-2 cursor-pointer group-hover:text-primary transition-colors">Live Market Models</p>
                <p className="text-sm text-white/50 mt-1">Real-time pricing accuracy</p>
+               <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-56 p-3 bg-[#1A2238] border border-white/10 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.5)] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 pointer-events-none translate-y-2 group-hover:translate-y-0">
+                  <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-[#1A2238] border-b border-r border-white/10 transform rotate-45"></div>
+                  <p className="text-xs text-white/80 relative z-10 leading-relaxed">Our algorithms process real-time transaction data to provide up-to-the-minute property valuations and pricing trends.</p>
+               </div>
             </div>
-            <div className="text-center">
-               <Building2 className="w-8 h-8 text-white/40 mx-auto mb-4" />
-               <p className="text-white font-semibold flex items-center justify-center gap-2 cursor-pointer hover:text-primary transition-colors">Institutional Grade</p>
+            <div className="text-center group relative">
+               <Building2 className="w-8 h-8 text-white/40 mx-auto mb-4 group-hover:text-primary transition-colors duration-300" />
+               <p className="text-white font-semibold flex items-center justify-center gap-2 cursor-pointer group-hover:text-primary transition-colors">Institutional Grade</p>
                <p className="text-sm text-white/50 mt-1">Enterprise-level data</p>
+               <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-56 p-3 bg-[#1A2238] border border-white/10 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.5)] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 pointer-events-none translate-y-2 group-hover:translate-y-0">
+                  <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-[#1A2238] border-b border-r border-white/10 transform rotate-45"></div>
+                  <p className="text-xs text-white/80 relative z-10 leading-relaxed">Enterprise-level data and analytics previously only accessible to large institutional investors and funds.</p>
+               </div>
             </div>
-            <div className="text-center">
-               <ShieldCheck className="w-8 h-8 text-white/40 mx-auto mb-4" />
-               <p className="text-white font-semibold flex items-center justify-center gap-2 cursor-pointer hover:text-primary transition-colors">Risk Analysis</p>
+            <div className="text-center group relative">
+               <ShieldCheck className="w-8 h-8 text-white/40 mx-auto mb-4 group-hover:text-primary transition-colors duration-300" />
+               <p className="text-white font-semibold flex items-center justify-center gap-2 cursor-pointer group-hover:text-primary transition-colors">Risk Analysis</p>
                <p className="text-sm text-white/50 mt-1">Investment safety scoring</p>
+               <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-56 p-3 bg-[#1A2238] border border-white/10 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.5)] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 pointer-events-none translate-y-2 group-hover:translate-y-0">
+                  <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-[#1A2238] border-b border-r border-white/10 transform rotate-45"></div>
+                  <p className="text-xs text-white/80 relative z-10 leading-relaxed">Comprehensive investment safety scoring based on market volatility, legal clarity, and historical risks.</p>
+               </div>
             </div>
           </div>
         </div>

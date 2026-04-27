@@ -39,16 +39,28 @@ export default function PredictorCard({ defaultLocation = "", onCalculate, onAdd
   }, [defaultLocation, location]);
 
   useEffect(() => {
+    const FALLBACK_TOP = ["Bandra West", "Andheri East", "Worli", "Juhu", "Powai"];
+    const FALLBACK_ALL = [
+      "Andheri East", "Andheri West", "Bandra East", "Bandra West", "Borivali East",
+      "Borivali West", "Chembur", "Colaba", "Dahisar", "Dadar", "Ghatkopar East",
+      "Ghatkopar West", "Goregaon East", "Goregaon West", "Juhu", "Kandivali East",
+      "Kandivali West", "Kurla", "Lower Parel", "Malad East", "Malad West",
+      "Matunga", "Mulund", "Navi Mumbai", "Parel", "Powai", "Santacruz East",
+      "Santacruz West", "Thane", "Vikhroli", "Vile Parle East", "Vile Parle West",
+      "Wadala", "Worli"
+    ];
+
     const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
     fetch(`${apiBase}/regions/top`)
       .then(res => res.json())
-      .then(data => setTopRegions(data.regions || []))
-      .catch(e => console.error("Could not fetch top regions", e));
-      
+      .then(data => setTopRegions(data.regions?.length ? data.regions : FALLBACK_TOP))
+      .catch(() => setTopRegions(FALLBACK_TOP));
+
     fetch(`${apiBase}/regions/all`)
       .then(res => res.json())
-      .then(data => setAllRegions(data.regions || []))
-      .catch(e => console.error("Could not fetch all regions", e));
+      .then(data => setAllRegions(data.regions?.length ? data.regions : FALLBACK_ALL))
+      .catch(() => setAllRegions(FALLBACK_ALL));
   }, []);
 
   const handlePredict = async (e: React.FormEvent) => {
@@ -110,7 +122,7 @@ export default function PredictorCard({ defaultLocation = "", onCalculate, onAdd
       }, incrementTime);
       return () => clearInterval(timer);
     }
-  }, [price]);
+  }, [price, budget]);
 
   return (
     <motion.div 
@@ -362,7 +374,7 @@ export default function PredictorCard({ defaultLocation = "", onCalculate, onAdd
                </div>
                <h3 className="text-2xl font-bold text-white mb-2 tracking-tight">Budget Exceeded</h3>
                <p className="text-white/70 text-[15px] mb-8 leading-relaxed">
-                 This property's live valuation (₹{displayPrice.toLocaleString('en-IN')}) is currently exactly <span className="text-red-400 font-bold">₹{(displayPrice - Number(budget)).toLocaleString('en-IN')} over</span> your maximum budget cap of ₹{Number(budget).toLocaleString('en-IN')}.
+                 This property&apos;s live valuation (₹{displayPrice.toLocaleString('en-IN')}) is currently exactly <span className="text-red-400 font-bold">₹{(displayPrice - Number(budget)).toLocaleString('en-IN')} over</span> your maximum budget cap of ₹{Number(budget).toLocaleString('en-IN')}.
                </p>
                <button 
                  onMouseDown={() => setShowBudgetWarning(false)}

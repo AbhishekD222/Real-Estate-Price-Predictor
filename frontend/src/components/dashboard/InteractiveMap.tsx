@@ -7,21 +7,22 @@ import { MapContainer, TileLayer, CircleMarker, Tooltip as LeafletTooltip } from
 import "leaflet/dist/leaflet.css";
 import { MapPin } from "lucide-react";
 
+interface HeatmapLocation {
+  lat: number;
+  lng: number;
+  intensity: number;
+}
+
 export default function InteractiveMap() {
-  const [isMounted, setIsMounted] = useState(false);
-  const [locations, setLocations] = useState([]);
+  const [locations, setLocations] = useState<HeatmapLocation[]>([]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setIsMounted(true);
     const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
     fetch(`${apiBase}/locations`)
       .then(res => res.json())
       .then(data => setLocations(data.heatmap))
       .catch(e => console.error("Could not load heatmap", e));
   }, []);
-
-  if (!isMounted) return null;
 
   return (
     <motion.div 
@@ -49,7 +50,7 @@ export default function InteractiveMap() {
               attribution='&copy; <a href="https://carto.com/">CartoDB</a>'
               url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
             />
-            {locations.map((loc: {lat: number, lng: number, intensity: number}, i: number) => {
+            {locations.map((loc, i) => {
               // Red = hot (high intensity), Blue = cold (low intensity)
               const color = loc.intensity > 0.6 ? "#ef4444" : (loc.intensity > 0.3 ? "#eab308" : "#3b82f6");
               return (

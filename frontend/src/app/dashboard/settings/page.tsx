@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import { 
   ArrowLeft, Camera, User, Mail, Phone, MapPin, 
@@ -45,23 +45,23 @@ const defaultProfile: UserProfile = {
 
 export default function SettingsPage() {
   const [profile, setProfile] = useState<UserProfile>(defaultProfile);
+  const [isMounted, setIsMounted] = useState(false);
   const [saved, setSaved] = useState(false);
   const [activeSection, setActiveSection] = useState<"profile" | "contact" | "preferences">("profile");
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const raw = localStorage.getItem("urbanUser");
-    if (raw) {
-      try {
-        const parsed = JSON.parse(raw);
-        setProfile(prev => ({ ...prev, ...parsed }));
-      } catch { /* ignore */ }
-    }
-    const extras = localStorage.getItem("urbanUserProfile");
-    if (extras) {
-      try {
-        setProfile(prev => ({ ...prev, ...JSON.parse(extras) }));
-      } catch { /* ignore */ }
+    setIsMounted(true);
+    try {
+      const base = localStorage.getItem('urbanUser');
+      const extras = localStorage.getItem('urbanUserProfile');
+      setProfile({
+        ...defaultProfile,
+        ...(base ? JSON.parse(base) : {}),
+        ...(extras ? JSON.parse(extras) : {}),
+      });
+    } catch {
+      // ignore
     }
   }, []);
 
@@ -121,6 +121,8 @@ export default function SettingsPage() {
 
   return (
     <div className="min-h-screen bg-[#0B132B] bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(212,175,55,0.12),rgba(11,19,43,1))] text-white flex flex-col font-sans">
+      {!isMounted ? null : (
+        <>
 
       {/* Sticky Nav */}
       <nav className="border-b border-white/10 bg-black/40 backdrop-blur-xl sticky top-0 z-50">
@@ -163,6 +165,7 @@ export default function SettingsPage() {
               <div className="relative w-24 h-24 mx-auto mb-4">
                 <div className="w-24 h-24 rounded-full bg-primary/20 border-2 border-primary/50 flex items-center justify-center text-primary text-2xl font-black overflow-hidden shadow-[0_0_20px_rgba(212,175,55,0.2)]">
                   {profile.avatar
+                    // eslint-disable-next-line @next/next/no-img-element
                     ? <img src={profile.avatar} alt="avatar" className="w-full h-full object-cover" />
                     : getInitials(profile.name)
                   }
@@ -356,6 +359,8 @@ export default function SettingsPage() {
         </div>
       </main>
       <Footer />
+        </>
+      )}
     </div>
   );
 }
